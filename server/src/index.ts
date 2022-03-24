@@ -1,4 +1,8 @@
 import express, { Application } from 'express'; //Dependencias para desarrollo
+import indexRoutes from './routes/indexRoutes';
+import usuariosRoutes from './routes/usuariosRoutes';
+import morgan from 'morgan';
+import cors from 'cors';
 
 class Server {
 
@@ -7,15 +11,20 @@ class Server {
     constructor(){ //Constructor para que al momento de iniciar se ejecuta primero
         this.app = express();
         this.config(); //Llama la configuracion
-        this.routes(); //Lama las rutas
+        this.routes(); //Llama las rutas
     }
 
     config():void{ 
-        this.app.set('port', process.env.PORT ||3000) //Asignacion de puerto, si hay uno predeterminado lo asigna, si no entonces se va la puerto 3000
+        this.app.set('port', process.env.PORT ||3000); //Asignacion de puerto, si hay uno predeterminado lo asigna, si no entonces se va la puerto 3000
+        this.app.use(morgan('dev')); //Con estos modulos se puede visualizar las peticiones del servidor
+        this.app.use(cors());  //permite que los recursos restringidos de una pagina web se soliciten desde otro sitio fuera del dominio
+        this.app.use(express.json()); //Con esta configuracion se entienden los formatos json
+        this.app.use(express.urlencoded({extended: false})); //En caso de acceder a formularios hmtl
     }
 
     routes():void{  //Guarda las rutas
-
+        this.app.use(indexRoutes);
+        this.app.use('/usuarios',usuariosRoutes); 
     }
 
     start():void{ //Inicia el servidor
